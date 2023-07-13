@@ -1,78 +1,94 @@
-var startBtn = document.getElementById("start-btn")
-var introSectionEl = document.getElementById("intro-section")
-var timerEl = document.getElementById("timer")
-var questionSectionEl = document.getElementById("question-section")
-var titleEl = document.getElementById("title")
-var choicesEl = document.querySelectorAll(".choices")
-var questionIndex = 0
-var questionsArray = [
-    {
-        title: "q 1",
-        choices: ["c1", "c2", "c3", "c4"],
-        answer: "c2"
-    },
-    {
-        title: "q 2",
-        choices: ["c1", "c2", "c3", "c4"],
-        answer: "c1"
-    },
-    {
-        title: "q 3",
-        choices: ["c1", "c2", "c3", "c4"],
-        answer: "c4"
-    },
-    {
-        title: "q 4",
-        choices: ["c1", "c2", "c3", "c4"],
-        answer: "c3"
-    },
-    {
-        title: "q 5",
-        choices: ["c1", "c2", "c3", "c4"],
-        answer: "c2"
-    },
-]
-
-//var initialSectionEl=document.getElementById("initial-section")
-
-var timeLeft = questionsArray.length * 15
-
-
-
-
+var startBtnEl = document.getElementById("start-btn");
+var introSectionEl = document.getElementById("intro-section");
+var timerEl = document.getElementById("timer");
+var scoreEl = document.getElementById("score");
+var questionSectionEl = document.getElementById("question-section");
+var titleEl = document.getElementById("title");
+var choicesEl = document.querySelectorAll(".choices");
+var initialsInput = document.getElementById("initials-input");
+var initialsSectionEl = document.getElementById("initials-section");
+var saveBtn = document.getElementById("save-btn");
+var questionIndex = 0;
 var setIntervalId = 0;
+var score = 0;
+
+var questionsArray = [
+  {
+    title: "Commonly used data types DO NOT include:",
+    choices: ["strings", "booleans", "alerts", "numbers"],
+    answer: "alerts"
+  },
+  {
+    title: "The condition in an if / else statement is enclosed within ____.",
+    choices: ["quotes", "curly brackets", "parentheses", "square brackets"],
+    answer: "curly brackets"
+  },
+  {
+    title: "Arrays in JavaScript can be used to store ____.",
+    choices: ["numbers and strings", "other arrays", "booleans", "all of the above"],
+    answer: "all of the above"
+  },
+  {
+    title: "String values must be enclosed within _____ when being assigned to variables.",
+    choices: ["commas", "curly brackets", "quotes", "parentheses"],
+    answer: "quotes"
+  },
+  {
+    title: "A very useful tool used during development and debugging for printing content to the debugger is:",
+    choices: ["JavaScript", "terminal / bash", "for loops", "console log"],
+    answer: "console log"
+  }
+];
+
+var timeLeft = questionsArray.length * 15;
 
 function startQuiz() {
-    introSectionEl.classList.add("hide")
-    questionSectionEl.removeAttribute("class")
-    setIntervalId = setInterva(countDown, 1000)
-    showQuestions()
+  introSectionEl.classList.add("hide");
+  questionSectionEl.classList.remove("hide");
+  setIntervalId = setInterval(countDown, 1000);
+  showQuestions();
 }
 
 function countDown() {
-    timerEl.textContent = timeLeft--
-    if (timeLeft === 0) {
-        clearInterval(setIntervalId)
-    }
+  timerEl.textContent = timeLeft--;
+  if (timeLeft === 0) {
+    clearInterval(setIntervalId);
+  }
 }
 
 function showQuestions() {
-    titleEl.textContent = questionsArray[questionIndex].title
-
-    choicesEl[0].textContent = questionsArray[questionIndex].choices[0]
-    choicesEl[1].textContent = questionsArray[questionIndex].choices[1]
-    choicesEl[2].textContent = questionsArray[questionIndex].choices[2]
-    choicesEl[3].textContent = questionsArray[questionIndex].choices[3]
+  var currentQuestion = questionsArray[questionIndex];
+  titleEl.textContent = currentQuestion.title;
+  for (var i = 0; i < choicesEl.length; i++) {
+    choicesEl[i].textContent = currentQuestion.choices[i];
+  }
 }
 
-function nextQuestion(event) {
-    var currentElement = event.target
-    if (currentElement.matches("button"))
-        questionIndex++
-    showQuestions()
+function checkValue(event) {
+  var selectedChoice = event.target.textContent;
+  var currentQuestion = questionsArray[questionIndex];
+  if (selectedChoice === currentQuestion.answer) {
+    score += 20;
+  } else {
+    timeLeft -= 10;
+  }
 
+  if (questionIndex < questionsArray.length - 1) {
+    questionIndex++;
+    showQuestions();
+  } else {
+    endQuiz();
+  }
 }
 
-startBtn.addEventListener("click", startQuiz)
+function endQuiz() {
+  clearInterval(setIntervalId);
+  questionSectionEl.classList.add("hide");
+  initialsSectionEl.classList.remove("hide");
+  scoreEl.textContent = score;
+}
 
-questionSectionEl.addEventListener("click", nextQuestion)
+startBtnEl.addEventListener("click", startQuiz);
+choicesEl.forEach(function (choice) {
+  choice.addEventListener("click", checkValue);
+});
